@@ -66,6 +66,7 @@ public class AudioManager : MonoBehaviour
 
     public void RequestSFX(SFXTYPE sfx)
     {
+        as_sfx.Stop();
         as_sfx.PlayOneShot(
             sfxGroups[(int)sfx].sounds[Random.Range(0, sfxGroups[(int)sfx].sounds.Length)], 
             Random.Range(0, sfxGroups[(int)sfx].sounds.Length)
@@ -95,6 +96,13 @@ public class AudioManager : MonoBehaviour
         {
             return null;
         }
+
+        for (int i = 0; i < as_noise.Length; i++)
+        {
+            AudioSource source = as_noise[i];
+            source.panStereo = -1;
+            StartVolumeFade(source, (float)source.volume, .3f);
+        }
         
         if (currentNoiseIndex < noiseObjectList.Count - 1)
         {
@@ -105,6 +113,10 @@ public class AudioManager : MonoBehaviour
             currentNoiseIndex = 0;
         }
         GameObject result = noiseObjectList[currentNoiseIndex];
+        AudioSource currentSource = result.GetComponent<AudioSource>();
+        currentSource.panStereo = 1;
+        StartVolumeFade(currentSource, currentSource.volume, 1f);
+        //source
         
         return result;
     }
@@ -157,6 +169,36 @@ public class AudioManager : MonoBehaviour
             StopCoroutine(COR_trackFade);
         }
         COR_trackFade = null;
+    }
+    
+    void StartVolumeFade(AudioSource source, float sVol, float eVol)
+    {
+        //StopVolumeFade();
+        COR_trackFade = StartCoroutine(VolumeFade(source, sVol, eVol));
+    }
+
+    void StopVolumeFade()
+    {
+        if(COR_trackFade != null)
+        {
+            StopCoroutine(COR_trackFade);
+        }
+        COR_trackFade = null;
+    }
+
+    IEnumerator VolumeFade(AudioSource source, float sVol, float eVol)
+    {
+        float passingTime = 0f;
+        while(passingTime <= 1f)
+        {
+            passingTime += Time.fixedDeltaTime / trackFadeDuration;
+            for(int i = 0; i < 2; i++)
+            {
+                source.volume = Mathf.Lerp(sVol, eVol, fadeCurve.Evaluate(passingTime));
+            }
+            yield return new WaitForFixedUpdate();
+        }
+        StopVolumeFade();
     }
 
     IEnumerator TrackFade()

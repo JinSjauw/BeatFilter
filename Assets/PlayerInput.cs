@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.InputSystem;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -10,19 +11,21 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField] private float stepAmount = 100f;
     private int noiseIndex = 0;
+    private float inputLow = 0;
+    private float inputHigh = 0;
+    private bool lowPass, highPass;
     
     void Start() {
-        //AudioManager.instance.RequestTrack(TRACKTYPE.second, true);
         AudioManager.instance.RequestNoise();
         AudioManager.instance.RequestNoise();
         AudioManager.instance.RequestNoise();
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    public void NextTrack(InputAction.CallbackContext context)
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (context.performed)
         {
+            AudioManager.instance.RequestSFX(SFXTYPE.pling);
             GameObject nextNoise = AudioManager.instance.GetNextNoiseObject();
             
             if (nextNoise == null)
@@ -30,39 +33,51 @@ public class PlayerInput : MonoBehaviour
                 return;
             }
             
-            AudioManager.instance.RequestSFX(SFXTYPE.pling);
             lowPassFilter = nextNoise.GetComponent<AudioLowPassFilter>();
             highPassFilter = nextNoise.GetComponent<AudioHighPassFilter>();
         }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Return))
+    public void LowFrequency(InputAction.CallbackContext context)
+    {
+        if (context.started)
         {
-            AudioManager.instance.RequestSFX(SFXTYPE.click);
-            AudioManager.instance.OnConfirm();
+            inputLow = context.ReadValue<float>();
+            lowPass = true;
         }
-        
-        if(Input.GetKey(KeyCode.UpArrow))
+
+        if (context.canceled)
+        {
+            lowPass = false;
+        }
+    }
+    
+    public void HighFrequency(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            inputHigh = context.ReadValue<float>();
+            highPass = true;
+        }
+
+        if (context.canceled)
+        {
+            highPass = false;
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (lowPass)
         {
             float cutoffFrequency = lowPassFilter.cutoffFrequency;
-            lowPassFilter.cutoffFrequency = cutoffFrequency + stepAmount * Time.deltaTime;
+            lowPassFilter.cutoffFrequency = cutoffFrequency + stepAmount * inputLow * Time.deltaTime;
         }
-
-        if(Input.GetKey(KeyCode.DownArrow))
-        {
-            float cutoffFrequency = lowPassFilter.cutoffFrequency;
-            lowPassFilter.cutoffFrequency = cutoffFrequency - stepAmount * Time.deltaTime;
-        }
-
-         if(Input.GetKey(KeyCode.RightArrow))
+        if (highPass)
         {
             float cutoffFrequency = highPassFilter.cutoffFrequency;
-            highPassFilter.cutoffFrequency = cutoffFrequency + stepAmount * Time.deltaTime;
-        }
-
-        if(Input.GetKey(KeyCode.LeftArrow))
-        {
-            float cutoffFrequency = highPassFilter.cutoffFrequency;
-            highPassFilter.cutoffFrequency = cutoffFrequency - stepAmount * Time.deltaTime;
+            highPassFilter.cutoffFrequency = cutoffFrequency + stepAmount * inputHigh * Time.deltaTime;
         }
     }
 }
