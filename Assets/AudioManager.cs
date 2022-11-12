@@ -14,17 +14,36 @@ public enum TRACKTYPE
     second
 }
 
+public enum NOISETYPE
+{
+    first1 = 0,
+    first2,
+    second1,
+    second2,
+    third1,
+    third2,
+}
+
+public enum VOICETYPE 
+{
+    main = 0,
+    second
+}
+
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
     private Coroutine COR_trackFade;
     private AudioSource as_sfx;
+    private AudioSource as_voice;
     private AudioSource[] as_tracks;
     private AudioSource[] as_noise;
     private List<GameObject> noiseObjectList;
     
     [Header("Main Tracks")]
     [SerializeField] private AudioClip[] tracks;
+    [Header("Voice Over")]
+    [SerializeField] private AudioClip[] voices;
     [Header("Noise Tracks")]
     [SerializeField] private AudioClip[] noise;
 
@@ -32,6 +51,7 @@ public class AudioManager : MonoBehaviour
     private int noiseIndex;
     private int previousTrackIndex;
     private int currentNoiseIndex = 0;
+    [SerializeField] private int noiseObjects;
     [SerializeField] private float trackFadeDuration = 1f;
     [SerializeField] private AnimationCurve fadeCurve;
     [SerializeField] private SFXGroup[] sfxGroups;
@@ -48,13 +68,13 @@ public class AudioManager : MonoBehaviour
         instance = this;
         noiseObjectList = new List<GameObject>();
         as_tracks = new AudioSource[tracks.Length];
-        for(int i = 0; i < as_tracks.Length; i++)
+        for(int i = 0; i < 1; i++)
         {
             as_tracks[i] = transform.Find("AS_Track_" + i.ToString()).GetComponent<AudioSource>();
         }
 
         as_noise = new AudioSource[noise.Length];
-        for(int i = 0; i < as_noise.Length; i++)
+        for(int i = 0; i < noiseObjects; i++)
         {
             GameObject noise = transform.Find("AS_Noise_" + i.ToString()).gameObject;
             as_noise[i] = noise.GetComponent<AudioSource>();
@@ -62,6 +82,7 @@ public class AudioManager : MonoBehaviour
         }
 
         as_sfx = transform.Find("AS_SFX").GetComponent<AudioSource>();
+        as_voice = transform.Find("AS_VOICE").GetComponent<AudioSource>();
     }
 
     public void RequestSFX(SFXTYPE sfx)
@@ -69,11 +90,17 @@ public class AudioManager : MonoBehaviour
         as_sfx.Stop();
         as_sfx.PlayOneShot(
             sfxGroups[(int)sfx].sounds[Random.Range(0, sfxGroups[(int)sfx].sounds.Length)], 
-            Random.Range(0, sfxGroups[(int)sfx].sounds.Length)
+            Random.Range(sfxGroups[(int)sfx].volumes[0], sfxGroups[(int)sfx].volumes[1])
         );
     }
 
-    public void RequestNoise()
+    public void RequestVoice(VOICETYPE voice)
+    {
+        as_voice.Stop();
+        as_voice.PlayOneShot(voices[(int)voice], 1f);
+    }
+
+    public void RequestNoise(NOISETYPE noiseID)
     {
         if(noiseIndex > as_noise.Length)
         {
@@ -81,13 +108,18 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        as_noise[noiseIndex].clip = noise[noiseIndex];
+        as_noise[noiseIndex].clip = noise[(int)noiseID];
         as_noise[noiseIndex].enabled = true;
         as_noise[noiseIndex].loop = true;
         as_noise[noiseIndex].volume = 1f;
         as_noise[noiseIndex].Play();
 
         noiseIndex++;
+    }
+
+    public void ResetIndex() 
+    {
+        noiseIndex = 0;
     }
 
     public GameObject GetNextNoiseObject()
@@ -97,7 +129,7 @@ public class AudioManager : MonoBehaviour
             return null;
         }
 
-        for (int i = 0; i < as_noise.Length; i++)
+        for (int i = 0; i < noiseObjects; i++)
         {
             AudioSource source = as_noise[i];
             source.panStereo = -1;
@@ -119,14 +151,6 @@ public class AudioManager : MonoBehaviour
         //source
         
         return result;
-    }
-
-    public void OnConfirm()
-    {
-        if (noiseObjectList.Count > 0)
-        {
-            noiseObjectList.RemoveAt(currentNoiseIndex);
-        }
     }
 
     public void RequestTrack(TRACKTYPE track, bool withFade)
