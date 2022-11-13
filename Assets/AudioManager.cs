@@ -26,8 +26,17 @@ public enum NOISETYPE
 
 public enum VOICETYPE 
 {
-    main = 0,
-    second
+    up = 0,
+    littleUp,
+    down,
+    littleDown,
+    right,
+    littleRight,
+    left, 
+    littleLeft,
+    intro,
+    intro2,
+    clearLevel1,
 }
 
 public class AudioManager : MonoBehaviour
@@ -100,12 +109,12 @@ public class AudioManager : MonoBehaviour
         as_voice.PlayOneShot(voices[(int)voice], 1f);
     }
 
-    public void RequestNoise(NOISETYPE noiseID)
+    public GameObject RequestNoise(NOISETYPE noiseID)
     {
         if(noiseIndex > as_noise.Length)
         {
             Debug.Log("Ran out of AudioSources");
-            return;
+            return null;
         }
 
         as_noise[noiseIndex].clip = noise[(int)noiseID];
@@ -114,7 +123,17 @@ public class AudioManager : MonoBehaviour
         as_noise[noiseIndex].volume = 1f;
         as_noise[noiseIndex].Play();
 
+        GameObject result = as_noise[noiseIndex].gameObject;
+
+        result.GetComponent<AudioHighPassFilter>().enabled = true;
+        result.GetComponent<AudioHighPassFilter>().cutoffFrequency = 5000;
+
+        result.GetComponent<AudioLowPassFilter>().enabled = true;
+        result.GetComponent<AudioLowPassFilter>().cutoffFrequency = 5000;
+
         noiseIndex++;
+
+        return result;
     }
 
     public void ResetIndex() 
@@ -144,6 +163,7 @@ public class AudioManager : MonoBehaviour
         {
             currentNoiseIndex = 0;
         }
+
         GameObject result = noiseObjectList[currentNoiseIndex];
         AudioSource currentSource = result.GetComponent<AudioSource>();
         currentSource.panStereo = 1;
@@ -151,6 +171,15 @@ public class AudioManager : MonoBehaviour
         //source
         
         return result;
+    }
+
+    public void ConfirmLevel() 
+    {
+        for(int i = 0; i < noiseObjectList.Count; i++) 
+        {
+                noiseObjectList[i].GetComponent<AudioSource>().panStereo = 0;
+                noiseObjectList[i].GetComponent<AudioSource>().volume = 1;
+        }
     }
 
     public void RequestTrack(TRACKTYPE track, bool withFade)

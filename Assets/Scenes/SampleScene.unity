@@ -172,6 +172,8 @@ MonoBehaviour:
   highPassFilter: {fileID: 1023002345}
   stepAmount: 2500
   level: 0
+  voiceTimer: 0
+  voiceTimerMinimum: 10
 --- !u!114 &264190738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -756,7 +758,7 @@ AudioLowPassFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1023002342}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_LowpassResonanceQ: 1
   lowpassLevelCustomCurve:
@@ -826,7 +828,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tracks:
   - {fileID: 8300000, guid: 2fa4cefdea8e7cc4fa6c244a9d025e79, type: 3}
-  voices: []
+  voices:
+  - {fileID: 8300000, guid: 05cfc5427370c944597b3c4d227f938e, type: 3}
+  - {fileID: 8300000, guid: 604bda53533d46841b299801e7ab68d9, type: 3}
+  - {fileID: 8300000, guid: 7f8ac13ee18f4ae469e54cc78f1b93d6, type: 3}
+  - {fileID: 8300000, guid: ac92b04429e5b194d9ad883b0b5abc14, type: 3}
+  - {fileID: 8300000, guid: 4c94318325dcb5c478622b83e8962ccd, type: 3}
+  - {fileID: 8300000, guid: 9022ec398eeed004a9e03d49c9d7b50e, type: 3}
+  - {fileID: 8300000, guid: d7028597b23e61f4699a9a41cb4c0a8d, type: 3}
+  - {fileID: 8300000, guid: b42373634e30fdf45bd809fa77361a63, type: 3}
+  - {fileID: 8300000, guid: 328df045e7cb1d14b9d0c93e455a3e18, type: 3}
+  - {fileID: 8300000, guid: c6b6212e16ac13d498f09eccde14faf2, type: 3}
+  - {fileID: 8300000, guid: 8a6a4f98787386a4588adb8e1a1a7eb9, type: 3}
   noise:
   - {fileID: 8300000, guid: 2fa4cefdea8e7cc4fa6c244a9d025e79, type: 3}
   - {fileID: 8300000, guid: 67f6ed8978949dd45b191e91a03d18a6, type: 3}
