@@ -172,7 +172,7 @@ MonoBehaviour:
   highPassFilter: {fileID: 1023002345}
   stepAmount: 2500
   level: 0
-  voiceTimer: 0
+  voiceTimer: 10
   voiceTimerMinimum: 10
 --- !u!114 &264190738
 MonoBehaviour:

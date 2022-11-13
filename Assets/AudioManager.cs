@@ -103,10 +103,11 @@ public class AudioManager : MonoBehaviour
         );
     }
 
-    public void RequestVoice(VOICETYPE voice)
+    public float RequestVoice(VOICETYPE voice)
     {
         as_voice.Stop();
         as_voice.PlayOneShot(voices[(int)voice], 1f);
+        return voices[(int)voice].length;
     }
 
     public GameObject RequestNoise(NOISETYPE noiseID)

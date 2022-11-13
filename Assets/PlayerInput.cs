@@ -11,12 +11,14 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField] private float stepAmount = 100f;
     [SerializeField] private int level = 0;
-    [SerializeField] private float voiceTimer = 5;
+    [SerializeField] private float voiceTimer, levelEndTimer = 5;
     [SerializeField] private float voiceTimerMinimum = 8;
+    [SerializeField] private int autoCorrect;
     private float inputLow = 0;
     private float inputHigh = 0;
     private bool lowPass, highPass;
     private bool levelClear = false;
+    private bool lowFrequency, highFrequency = false;
 
     public void Confirm(InputAction.CallbackContext context) 
     {
@@ -32,8 +34,7 @@ public class PlayerInput : MonoBehaviour
                 AudioManager.instance.ResetIndex();
                 AudioManager.instance.RequestNoise(NOISETYPE.first1);
                 GameObject noiseObject = AudioManager.instance.RequestNoise(NOISETYPE.first2);
-                noiseObject.GetComponent<AudioLowPassFilter>().enabled = false;
-                
+
                 //Game Logic;
             }
             else if(level == 1 && levelClear) 
@@ -47,11 +48,12 @@ public class PlayerInput : MonoBehaviour
                 GameObject noiseObject2 = AudioManager.instance.RequestNoise(NOISETYPE.second2);
 
                 noiseObject1.GetComponent<AudioHighPassFilter>().enabled = false;
-                noiseObject2.GetComponent<AudioHighPassFilter>().enabled = false;
+                noiseObject2.GetComponent<AudioLowPassFilter>().enabled = false;
             }
             else if(level == 2) 
             {
                 level = 3;
+                levelClear = false;
                 AudioManager.instance.RequestSFX(SFXTYPE.click);
                 AudioManager.instance.ResetIndex();
                 AudioManager.instance.ConfirmLevel();
@@ -121,26 +123,91 @@ public class PlayerInput : MonoBehaviour
 
         if(level == 1) 
         {
+            if(highPassFilter.gameObject.name != "AS_Noise_1") 
+            {
+                return;
+            }
+
+            if(highPassFilter.cutoffFrequency + autoCorrect > 18000) 
+            {
+                highPassFilter.cutoffFrequency = 18000;
+            }
+
             if (highPassFilter.cutoffFrequency > 17500) 
             {
                 //Pass level 1
-                levelClear = true;
-                AudioManager.instance.RequestVoice(VOICETYPE.clearLevel1);
+
+                levelEndTimer = AudioManager.instance.RequestVoice(VOICETYPE.clearLevel1);
+                levelEndTimer -= Time.deltaTime;
+                if(levelEndTimer < 0) 
+                {
+                    levelClear = true;
+                }
+
                 voiceTimer = voiceTimerMinimum;
             }
-            else if(highPassFilter.cutoffFrequency > 12000 && voiceTimer < 0) 
+            else if(highPassFilter.cutoffFrequency > 12000 && voiceTimer < 0 && highPassFilter.enabled) 
             {
                 //smidge up
-                Debug.Log("Smidge up");
                 AudioManager.instance.RequestVoice(VOICETYPE.littleUp);
                 voiceTimer = voiceTimerMinimum;
             }
-            else if (highPassFilter.cutoffFrequency < 8000 && voiceTimer < 0) 
+            else if (highPassFilter.cutoffFrequency < 8000 && voiceTimer < 0 && highPassFilter.enabled) 
             {
                 //slide up
                 AudioManager.instance.RequestVoice(VOICETYPE.up);
                 voiceTimer = voiceTimerMinimum;
             }
+        }
+        //Level 2
+        if (level == 2)
+        {
+            if (highPassFilter.cutoffFrequency + autoCorrect > 22000)
+            {
+                highPassFilter.cutoffFrequency = 22000;
+                highFrequency = true;
+            }
+
+            if (lowPassFilter.cutoffFrequency - autoCorrect < 900)
+            {
+                lowPassFilter.cutoffFrequency = 900;
+                lowFrequency = true;
+            }
+
+            if (highFrequency && lowFrequency)
+            {
+                //Pass level 2
+                levelClear = true;
+                AudioManager.instance.RequestVoice(VOICETYPE.clearLevel1);
+                voiceTimer = voiceTimerMinimum;
+            }
+            else if (highPassFilter.cutoffFrequency > 18000 && voiceTimer < 0)
+            {
+                //smidge up
+                AudioManager.instance.RequestVoice(VOICETYPE.littleUp);
+                voiceTimer = voiceTimerMinimum;
+            }
+            else if (highPassFilter.cutoffFrequency < 12000 && voiceTimer < 0)
+            {
+                //slide up
+                AudioManager.instance.RequestVoice(VOICETYPE.up);
+                voiceTimer = voiceTimerMinimum;
+            }
+
+            if (lowPassFilter.cutoffFrequency < 2000 && voiceTimer < 0)
+            {
+                //smidge left
+                AudioManager.instance.RequestVoice(VOICETYPE.littleLeft);
+                voiceTimer = voiceTimerMinimum;
+            }
+            else if (lowPassFilter.cutoffFrequency < 5000 && voiceTimer < 0)
+            {
+                //slide left
+                AudioManager.instance.RequestVoice(VOICETYPE.left);
+                voiceTimer = voiceTimerMinimum;
+            }
+
+
         }
     }
 
