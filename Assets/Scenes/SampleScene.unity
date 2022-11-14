@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -173,7 +173,11 @@ MonoBehaviour:
   stepAmount: 2500
   level: 0
   voiceTimer: 10
+  levelEndTimer: 5
   voiceTimerMinimum: 10
+  autoCorrect: 0
+  lowFrequency: 0
+  highFrequency: 0
 --- !u!114 &264190738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -840,6 +844,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 328df045e7cb1d14b9d0c93e455a3e18, type: 3}
   - {fileID: 8300000, guid: c6b6212e16ac13d498f09eccde14faf2, type: 3}
   - {fileID: 8300000, guid: 8a6a4f98787386a4588adb8e1a1a7eb9, type: 3}
+  - {fileID: 8300000, guid: 91e477badad2ac24fbade198b93b5eb7, type: 3}
+  - {fileID: 8300000, guid: f62529082ddab154ab2a4d06ce8fe29e, type: 3}
+  - {fileID: 8300000, guid: 8a6a4f98787386a4588adb8e1a1a7eb9, type: 3}
   noise:
   - {fileID: 8300000, guid: 2fa4cefdea8e7cc4fa6c244a9d025e79, type: 3}
   - {fileID: 8300000, guid: 67f6ed8978949dd45b191e91a03d18a6, type: 3}
@@ -1039,7 +1046,7 @@ AudioLowPassFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1295127762}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_LowpassResonanceQ: 1
   lowpassLevelCustomCurve:

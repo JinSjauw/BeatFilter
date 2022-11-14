@@ -37,6 +37,9 @@ public enum VOICETYPE
     intro,
     intro2,
     clearLevel1,
+    introUitleg,
+    clearLevel2,
+    clearLevel3
 }
 
 public class AudioManager : MonoBehaviour
@@ -103,10 +106,14 @@ public class AudioManager : MonoBehaviour
         );
     }
 
-    public float RequestVoice(VOICETYPE voice)
+    public void RequestVoice(VOICETYPE voice)
     {
         as_voice.Stop();
         as_voice.PlayOneShot(voices[(int)voice], 1f);
+    }
+
+    public float getClipLength(VOICETYPE voice)
+    {
         return voices[(int)voice].length;
     }
 
