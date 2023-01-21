@@ -374,9 +374,13 @@ public class PlayerInput : MonoBehaviour
         AudioManager.instance.RequestVoice(VOICETYPE.intro2);
         voiceTime = AudioManager.instance.getClipLength(VOICETYPE.intro2);
         yield return new WaitForSeconds(voiceTime);
-
+        
         start = true;
         
+        AudioManager.instance.RequestVoice(VOICETYPE.pressEnter);
+        voiceTime = AudioManager.instance.getClipLength(VOICETYPE.pressEnter);
+        yield return new WaitForSeconds(voiceTime);
+
         StopIntro();
     }
     
@@ -386,6 +390,7 @@ public class PlayerInput : MonoBehaviour
         LevelLogic();
 
         if(lowPassFilter == null && highPassFilter == null) { return; }
+        
         if (lowPass)
         {
             float cutoffFrequency = lowPassFilter.cutoffFrequency;

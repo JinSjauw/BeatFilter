@@ -36,10 +36,11 @@ public enum VOICETYPE
     littleLeft,
     intro,
     intro2,
+    pressEnter,
     clearLevel1,
     introUitleg,
     clearLevel2,
-    clearLevel3
+    clearLevel3,
 }
 
 public class AudioManager : MonoBehaviour
