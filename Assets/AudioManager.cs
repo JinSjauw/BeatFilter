@@ -113,6 +113,11 @@ public class AudioManager : MonoBehaviour
         as_voice.PlayOneShot(voices[(int)voice], 1f);
     }
 
+    public void StopVoice()
+    {
+        as_voice.Stop();
+    }
+
     public float getClipLength(VOICETYPE voice)
     {
         return voices[(int)voice].length;
